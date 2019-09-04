@@ -122,13 +122,51 @@ def nullHeuristic(state, problem=None):
 def aStarSearch(problem, heuristic=nullHeuristic):
     """Search the node that has the lowest combined cost and heuristic first"""
     from util import PriorityQueue
-    
-    print("Start position: " + str(problem.getStartState()))
-    print("Goal: " + str(problem.goal))
-    print("Heuristic for the start state: " + str(heuristic(
-          problem.getStartState(), problem)))
 
-    util.raiseNotDefined()
+    # print("\nStart position: " + str(problem.getStartState()))
+    # print("Goal: " + str(problem.goal))
+    # print("Heuristic for the start state: " + str(heuristic(problem.getStartState(), problem)))
+
+    currentState = problem.getStartState()
+    nodesToVisit = PriorityQueue()
+    tree = {}  # {"node": [parent node, cost to get to the son using this path, action to get from the parent to the son] }
+
+    # iter = 1
+    while(not(problem.isGoalState(currentState))):
+        # print('\nIteration #' + str(iter))
+        # print('Current position: ' + str(currentState))
+        successors = problem.getSuccessors(currentState)
+
+        # Visiting the current node
+        # print('Possible actions for the current node:')
+        for suc in successors:
+            cost = heuristic(suc[0], problem) + suc[2]
+
+            # Checking the parenting tree to avoid loops and updating it when needed
+            # Update is needed if the son does not exist or the cost of the found path is smaller than the one stored in tree
+            if((str(suc[0]) not in tree.keys()) or (cost < tree[str(suc[0])][1])):
+                # print('Moving to ' + str(suc[0]) + ' Cost: ' + str(cost))
+                nodesToVisit.update(suc[0], cost)
+                tree[str(suc[0])] = [currentState, cost, suc[1]]
+            # else:
+                # print('No expansion possible')
+        # print('Parenting tree: ')
+        # print(tree)
+
+        # Updating to the next node
+        currentState = nodesToVisit.pop()
+        # print('Next position: ' + str(currentState))
+
+        # iter += 1
+
+    # Building the path based on the parenting tree
+    solution = []
+    while(currentState != problem.getStartState()):
+        solution.insert(0, tree[str(currentState)][2])
+        currentState = tree[str(currentState)][0]
+
+    # print('Solution: ' + str(solution))
+    return solution
 
 
 # Abbreviations
