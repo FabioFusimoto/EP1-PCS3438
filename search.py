@@ -124,12 +124,13 @@ def aStarSearch(problem, heuristic=nullHeuristic):
     from util import PriorityQueue
 
     # print("\nStart position: " + str(problem.getStartState()))
-    # print("Goal: " + str(problem.goal))
+    # print("\nGoal: " + str(problem.goal))
     # print("Heuristic for the start state: " + str(heuristic(problem.getStartState(), problem)))
 
     currentState = problem.getStartState()
     nodesToVisit = PriorityQueue()
-    tree = {}  # {"node": [parent node, cost to get to the son using this path, action to get from the parent to the son] }
+    tree = {}
+    tree[str(currentState)] = [None, heuristic(currentState, problem), None]  # {"node": [parent node, cost to get to the son using this path, action to get from the parent to the son] }
 
     # iter = 1
     while(not(problem.isGoalState(currentState))):
@@ -137,27 +138,35 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         # print('Current position: ' + str(currentState))
         successors = problem.getSuccessors(currentState)
 
-        # Visiting the current node
+        # # Visiting the current node
         # print('Possible actions for the current node:')
         for suc in successors:
             cost = heuristic(suc[0], problem) + suc[2]
+            tracebackState = currentState
+            while(tracebackState != problem.getStartState()):
+                cost += 1
+                tracebackState = tree[str(tracebackState)][0]
 
-            # Checking the parenting tree to avoid loops and updating it when needed
-            # Update is needed if the son does not exist or the cost of the found path is smaller than the one stored in tree
+            # # Checking the parenting tree to avoid loops and updating it when needed
+            # # Update is needed if the son does not exist or the cost of the found path is smaller than the one stored in tree
             if((str(suc[0]) not in tree.keys()) or (cost < tree[str(suc[0])][1])):
                 # print('Moving to ' + str(suc[0]) + ' Cost: ' + str(cost))
                 nodesToVisit.update(suc[0], cost)
                 tree[str(suc[0])] = [currentState, cost, suc[1]]
+                # print('Tree updated: ' + '\'' + str(suc[0]) + '\' : ' + str([currentState, cost, suc[1]]))
             # else:
-                # print('No expansion possible')
+                # print('Tree did not update: ' + '\'' + str(suc[0]) + '\' : ' + str([currentState, cost, suc[1]]) +
+                #       ' because previous cost was ' + str(tree[str(suc[0])][1]))
         # print('Parenting tree: ')
         # print(tree)
 
-        # Updating to the next node
+        # # Updating to the next node
         currentState = nodesToVisit.pop()
         # print('Next position: ' + str(currentState))
 
         # iter += 1
+
+    # print('\nFinal tree: ' + str(tree) + '\n')
 
     # Building the path based on the parenting tree
     solution = []
@@ -166,6 +175,18 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         currentState = tree[str(currentState)][0]
 
     # print('Solution: ' + str(solution))
+
+    return solution
+
+
+def aStarSearchTimer(problem, heuristic=nullHeuristic):
+    from timeit import default_timer
+    repetitions = 50
+    start = default_timer()
+    for i in range(repetitions):
+        solution = aStarSearch(problem, heuristic)
+    end = default_timer()
+    print('Execution time: ' + str((end - start)) + 's')
     return solution
 
 
@@ -174,3 +195,4 @@ bfs = breadthFirstSearch
 dfs = depthFirstSearch
 astar = aStarSearch
 ucs = uniformCostSearch
+timer = aStarSearchTimer
