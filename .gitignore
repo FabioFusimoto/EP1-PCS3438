@@ -1,6 +1,6 @@
 
-.vscode/settings.json
+.vscode/
 
 *.pyc
 
-setup.cfg
+*.cfg
