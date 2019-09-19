@@ -144,7 +144,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         # print('Current position: ' + str(currentState))
         successors = problem.getSuccessors(currentState)
 
-        # # Visiting the current node
+        # Visiting the current node
         # print('Possible actions for the current node:')
         for suc in successors:
             cost = heuristic(suc[0], problem) + suc[2]
@@ -153,8 +153,8 @@ def aStarSearch(problem, heuristic=nullHeuristic):
                 cost += 1
                 tracebackState = tree[str(tracebackState)][0]
 
-            # # Checking the parenting tree to avoid loops and updating it when needed
-            # # Update is needed if the son does not exist or the cost of the found path is smaller than the one stored in tree
+            # Checking the parenting tree to avoid loops and updating it when needed
+            # Update is needed if the son does not exist or the cost of the found path is smaller than the one stored in tree
             if((str(suc[0]) not in tree.keys()) or (cost < tree[str(suc[0])][1])):
                 # print('Moving to ' + str(suc[0]) + ' Cost: ' + str(cost))
                 nodesToVisit.update(suc[0], cost)
@@ -166,7 +166,7 @@ def aStarSearch(problem, heuristic=nullHeuristic):
         # print('Parenting tree: ')
         # print(tree)
 
-        # # Updating to the next node
+        # Updating to the next node
         currentState = nodesToVisit.pop()
 
         # iter += 1
